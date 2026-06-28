@@ -12,13 +12,17 @@ export class Job {
   id!: number;
 
   @Column()
-  descripcion!: string; // Ej: "Tapizado de volante y asientos de cuero"
+  descripcion!: string; 
 
   @Column()
   nombreCliente!: string;
 
   @Column({ nullable: true })
-  telefonoCliente!: string; // Nos servirá para cuando integremos WhatsApp
+  telefonoCliente!: string; 
+
+  // ¡AQUÍ ESTÁ LA NUEVA COLUMNA DEL DINERO!
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
+  presupuestoTotal!: number;
 
   @Column({
     type: 'enum',
@@ -28,7 +32,7 @@ export class Job {
   estado!: JobStatus;
 
   @Column('date')
-  fechaEntrega!: string; // Formato YYYY-MM-DD
+  fechaEntrega!: string; 
 
   @CreateDateColumn()
   fechaCreacion!: Date;

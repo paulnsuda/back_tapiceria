@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+// 👇 AQUÍ ESTÁ EL CAMBIO: Importamos Job desde tu carpeta jobs
+import { Job } from '../../jobs/entities/job.entity'; 
 
 export enum PaymentType {
   ANTICIPO = 'anticipo',
@@ -11,11 +13,16 @@ export class Payment {
   @PrimaryGeneratedColumn()
   id!: number;
 
+  // 👇 Así le decimos a TypeORM que se relacione con tu entidad Job
+  @ManyToOne(() => Job)
+  @JoinColumn({ name: 'jobId' }) 
+  job!: Job; 
+
   @Column()
-  jobId!: number; // ID del trabajo al que pertenece este pago
+  jobId!: number; // Mantenemos esto para cuando solo quieras consultar o guardar el puro ID
 
   @Column('decimal', { precision: 10, scale: 2 })
-  monto!: number; // Cantidad de dinero (ej: 100.00)
+  monto!: number; 
 
   @Column({
     type: 'enum',
@@ -25,7 +32,7 @@ export class Payment {
   tipoPago!: PaymentType;
 
   @Column({ nullable: true })
-  notas!: string; // Ej: "Dejó en efectivo", "Transferencia Banco Pichincha"
+  notas!: string; 
 
   @CreateDateColumn()
   fechaPago!: Date;
