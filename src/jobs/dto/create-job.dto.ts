@@ -1,30 +1,29 @@
-// Agregamos IsNumber en la importación
-import { IsString, IsNotEmpty, IsEnum, IsOptional, IsNumber } from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber, Min, IsOptional, IsEnum, IsDateString } from 'class-validator';
 import { JobStatus } from '../entities/job.entity';
 
 export class CreateJobDto {
   @IsString()
   @IsNotEmpty()
+  clienteNombre!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  placaVehiculo!: string;
+
+  @IsString()
+  @IsNotEmpty()
   descripcion!: string;
 
-  @IsString()
-  @IsNotEmpty()
-  nombreCliente!: string;
-
-  @IsString()
-  @IsOptional()
-  telefonoCliente?: string;
-
-  // ¡AQUÍ AUTORIZAMOS EL INGRESO DEL DINERO!
   @IsNumber()
-  @IsNotEmpty()
-  presupuestoTotal!: number;
-
+  @Min(0)
   @IsOptional()
+  costoTotal?: number;
+
   @IsEnum(JobStatus)
+  @IsOptional()
   estado?: JobStatus;
 
-  @IsString()
-  @IsNotEmpty()
-  fechaEntrega!: string; 
+  @IsDateString()
+  @IsOptional()
+  fechaEntrega?: string; // Formato YYYY-MM-DD
 }

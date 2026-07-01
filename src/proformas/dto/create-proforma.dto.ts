@@ -1,24 +1,32 @@
-import { IsString, IsNotEmpty, IsNumber, Min, IsArray, IsOptional } from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber, Min, IsOptional, IsEnum, IsDateString } from 'class-validator';
+import { ProformaStatus } from '../entities/proforma.entity';
 
 export class CreateProformaDto {
   @IsString()
   @IsNotEmpty()
-  nombreCliente!: string;
+  clienteNombre!: string;
 
   @IsString()
   @IsOptional()
-  vehiculo?: string;
+  telefonoContacto?: string;
 
-  @IsArray()
+  @IsString()
+  @IsOptional()
+  vehiculoModelo?: string;
+
+  @IsString()
   @IsNotEmpty()
-  materialesUsados!: {
-    materialId: number;
-    nombre: string;
-    cantidad: number;
-    precioUnitario: number;
-  }[];
+  descripcionTrabajo!: string;
 
   @IsNumber()
-  @Min(0)
-  porcentajeGanancia!: number;
+  @Min(0.01, { message: 'El precio estimado debe ser mayor a 0' })
+  precioEstimado!: number;
+
+  @IsEnum(ProformaStatus)
+  @IsOptional()
+  estado?: ProformaStatus;
+
+  @IsDateString()
+  @IsOptional()
+  fechaValidez?: string;
 }
