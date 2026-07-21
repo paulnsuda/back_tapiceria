@@ -12,25 +12,23 @@ export class ProformasService {
   ) {}
 
   async create(createProformaDto: CreateProformaDto) {
-    const { materialesUsados, porcentajeGanancia } = createProformaDto;
+    // Le damos valor por defecto al arreglo de materiales por si viene vacío
+    const { materialesUsados = [] } = createProformaDto;
 
-    // 1. Calculamos automáticamente el costo base sumando: (precio * cantidad) de cada material
+    // 1. Calculamos el costo base sumando: (precio * cantidad) de los materiales
+    // Esto se guarda solo para tu control interno de costos.
     const costoBase = materialesUsados.reduce((sum, mat) => {
       return sum + (Number(mat.precioUnitario) * Number(mat.cantidad));
     }, 0);
 
-    // 2. Aplicamos la fórmula del porcentaje de ganancia
-    const margenGanancia = costoBase * (porcentajeGanancia / 100);
-    const precioFinal = costoBase + margenGanancia;
-
-    // 3. Creamos el registro con los cálculos automáticos del backend
+    // 2. Creamos el registro. 
+    // Al usar "...createProformaDto", Angular incrustará automáticamente 
+    // los $680 en el subtotal, precioEstimado y precioFinal.
     const nuevaProforma = this.proformaRepository.create({
       ...createProformaDto,
       costoBaseMateriales: costoBase,
-      precioFinalCliente: precioFinal,
     });
 
-    // 4. Guardamos en PostgreSQL
     return this.proformaRepository.save(nuevaProforma);
   }
 
@@ -44,5 +42,9 @@ export class ProformasService {
 
   remove(id: number) {
     return this.proformaRepository.delete(id);
+  }
+
+  update(id: number, updateProformaDto: Partial<CreateProformaDto>) {
+    return this.proformaRepository.update(id, updateProformaDto);
   }
 }

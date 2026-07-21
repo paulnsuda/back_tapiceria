@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Payment } from './entities/payment.entity';
 import { CreatePaymentDto } from './dto/create-payment.dto';
-import { Job } from '../jobs/entities/job.entity'; // Importamos la entidad Job para validar
+import { Job } from '../jobs/entities/job.entity'; 
 
 @Injectable()
 export class PaymentsService {
@@ -11,14 +11,11 @@ export class PaymentsService {
     @InjectRepository(Payment)
     private paymentRepository: Repository<Payment>,
     
-    // Inyectamos el repositorio de Job para poder verificar que el trabajo exista
     @InjectRepository(Job)
     private jobRepository: Repository<Job>,
   ) {}
 
-  // 1. Registrar un nuevo pago/anticipo
   async create(createPaymentDto: CreatePaymentDto) {
-    // Seguridad financiera: Verificamos que el trabajo exista antes de registrarle dinero
     const job = await this.jobRepository.findOne({ 
       where: { id: createPaymentDto.jobId } 
     });
@@ -31,20 +28,21 @@ export class PaymentsService {
     return this.paymentRepository.save(nuevoPago);
   }
 
-  // 2. Ver absolutamente todos los pagos del negocio (Auditoría del dueño)
   findAll() {
-    // Le agregué la relación con 'job' para que en tu auditoría veas a qué trabajo pertenece cada pago
     return this.paymentRepository.find({ 
       order: { fechaPago: 'DESC' },
       relations: ['job'] 
     });
   }
 
-  // 3. 🔥 FUNCIÓN CLAVE: Buscar todos los pagos de un trabajo en específico
   async findByJob(jobId: number) {
-    const pagos = await this.paymentRepository.findBy({ jobId });
+    // Buscamos los pagos ordenados por fecha
+    const pagos = await this.paymentRepository.find({ 
+      where: { jobId },
+      order: { fechaPago: 'DESC' }
+    });
     
-    // Calculamos el total que ha abonado sumando todos sus pagos
+    // Calculamos el total abonado
     const totalAbonado = pagos.reduce((sum, pago) => sum + Number(pago.monto), 0);
 
     return {
@@ -54,7 +52,6 @@ export class PaymentsService {
     };
   }
 
-  // 4. Eliminar un pago por si te equivocaste al digitarlo
   async remove(id: number) {
     const resultado = await this.paymentRepository.delete(id);
     

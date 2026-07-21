@@ -9,6 +9,9 @@ import { AuthModule } from './auth/auth.module';
 import { JobsModule } from './jobs/jobs.module';
 import { PaymentsModule } from './payments/payments.module';
 import { CatalogModule } from './catalog/catalog.module';
+import { GalleryModule } from './gallery/gallery.module';
+import { ServiciosBaseModule } from './servicios-base/servicios-base.module';
+import { LogsModule } from './logs/logs.module';
 
 @Module({
   imports: [
@@ -29,6 +32,9 @@ import { CatalogModule } from './catalog/catalog.module';
     JobsModule,
     PaymentsModule,
     CatalogModule,
+    GalleryModule,
+    ServiciosBaseModule,
+    LogsModule,
   ],
 })
 export class AppModule {}

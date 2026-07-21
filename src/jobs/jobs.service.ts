@@ -6,6 +6,7 @@ import { CreateJobDto } from './dto/create-job.dto';
 import { UpdateJobDto } from './dto/update-job.dto';
 import { Material } from '../materials/entities/material.entity'; // Inyectamos Material
 import { JobMaterial } from './entities/job-material.entity'; // Inyectamos la tabla intermedia
+import { LogsService } from '../logs/logs.service';
 
 @Injectable()
 export class JobsService {
@@ -19,10 +20,18 @@ export class JobsService {
     
     @InjectRepository(JobMaterial)
     private jobMaterialRepository: Repository<JobMaterial>,
+    private logsService: LogsService,
   ) {}
 
   async create(createJobDto: CreateJobDto) {
     const nuevoTrabajo = this.jobRepository.create(createJobDto);
+
+    await this.logsService.createLog(
+      'CREAR',
+      'Trabajos',
+      `Se creó un nuevo trabajo para el vehículo ${nuevoTrabajo.placaVehiculo} (Cliente: ${nuevoTrabajo.clienteNombre})`
+    );
+
     return this.jobRepository.save(nuevoTrabajo);
   }
 
@@ -106,4 +115,26 @@ export class JobsService {
       order: { fechaEntrega: 'ASC' }
     });
   }
+
+
+// Buscar un trabajo por la placa del vehículo (Público)
+async findByPlaca(placaVehiculo: string) {
+    // 1. Limpiamos lo que el usuario escribió: dejamos SOLO letras y números en mayúsculas
+    // Ejemplo: Si el cliente escribe "ub j-975", esto lo convierte en "UBJ975"
+    const placaLimpia = placaVehiculo.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+
+    // 2. Le decimos a la base de datos que también "limpie" temporalmente sus registros
+    // para compararlos con la placa limpia, quitando guiones y espacios.
+    const job = await this.jobRepository.createQueryBuilder('job')
+      .where("REPLACE(REPLACE(UPPER(job.placaVehiculo), '-', ''), ' ', '') = :placaLimpia", { placaLimpia })
+      .orderBy('job.id', 'DESC')
+      .getOne();
+    
+    if (!job) {
+      throw new NotFoundException(`No se encontró ningún vehículo con la placa ${placaVehiculo}`);
+    }
+    
+    return job;
+  }
+
 }

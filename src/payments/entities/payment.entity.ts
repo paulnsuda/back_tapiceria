@@ -14,7 +14,11 @@ export class Payment {
   id!: number;
 
   // 👇 Así le decimos a TypeORM que se relacione con tu entidad Job
-  @ManyToOne(() => Job)
+  @ManyToOne(() => Job, (job) => job.pagos, { 
+    onDelete: 'CASCADE' // <-- ¡ESTA ES LA MAGIA!
+  })
+  
+
   @JoinColumn({ name: 'jobId' }) 
   job!: Job; 
 

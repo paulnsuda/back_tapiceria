@@ -22,7 +22,6 @@ export class PaymentsController {
     return this.paymentsService.findAll();
   }
 
-  // Ruta para obtener el estado de cuenta de un trabajo específico (ej: /payments/job/1)
   @Get('job/:jobId')
   findByJob(@Param('jobId') jobId: string) {
     return this.paymentsService.findByJob(+jobId);

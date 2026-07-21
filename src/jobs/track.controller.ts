@@ -1,13 +1,11 @@
-// En src/app.controller.ts (Backend)
 import { Controller, Get, Param } from '@nestjs/common';
-import { JobsService } from './jobs/jobs.service';
+import { JobsService } from './jobs.service';
 
-@Controller()
-export class AppController {
+@Controller('track') // Define la ruta pública /track
+export class TrackController {
   constructor(private readonly jobsService: JobsService) {}
 
-  // Esta ruta será pública: http://localhost:3000/track/PBB-9021
-  @Get('track/:placa')
+  @Get(':placa')
   rastrearVehiculo(@Param('placa') placa: string) {
     return this.jobsService.findByPlaca(placa);
   }

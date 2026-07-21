@@ -3,10 +3,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PaymentsService } from './payments.service';
 import { PaymentsController } from './payments.controller';
 import { Payment } from './entities/payment.entity';
-import { Job } from '../jobs/entities/job.entity'; // Asegúrate de importar Job aquí también
+import { Job } from '../jobs/entities/job.entity'; // <-- 1. Importamos la entidad Job
 
 @Module({
-  // ¡Esta es la línea clave! Deben estar [Payment, Job]
+  // 2. Le decimos a TypeORM que este módulo usará ambas entidades
   imports: [TypeOrmModule.forFeature([Payment, Job])], 
   controllers: [PaymentsController],
   providers: [PaymentsService],

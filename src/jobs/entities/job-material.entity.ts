@@ -8,7 +8,10 @@ export class JobMaterial {
   id!: number;
 
   // 1. Lo enlazamos al Trabajo
-  @ManyToOne(() => Job, (job) => job.materialesUsados, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Job, (job) => job.materialesUsados, { 
+    onDelete: 'CASCADE' 
+  })
+  
   @JoinColumn({ name: 'jobId' })
   job!: Job;
 
